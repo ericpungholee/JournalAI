@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>One Year Ago Today - Notes</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo-container">
+                <img src="{{ url_for('static', filename='journal-ai-high-resolution-logo-transparent.png') }}" alt="Journal AI" class="logo">
+            </div>
+            <div class="header-buttons">
+                <button onclick="window.location.href='/'"><i class="fas fa-plus"></i> New</button>
+            </div>
+        </header>
+        <main>
+            <div class="container">
+                <div class="app-container">
+                    <!-- Navigation Sidebar -->
+                    <div class="notes-list">
+                        <h2><i class="fas fa-chevron-down"></i> Menu</h2>
+                        <nav class="sidebar-nav">
+                            <a href="/" class="nav-item">
+                                <i class="far fa-file-alt"></i> Notes
+                            </a>
+                            <a href="/insights" class="nav-item">
+                                <i class="far fa-chart-bar"></i> Insights
+                            </a>
+                            <a href="/one-year-ago" class="nav-item active">
+                                <i class="fas fa-history"></i> One Year Ago Today
+                            </a>
+                        </nav>
+                    </div>
+                    
+                    <!-- Main Content -->
+                    <div class="memory-container">
+                        {% if not data.has_entry %}
+                            <div class="no-memory">
+                                <h2>{{ data.message or data.error }}</h2>
+                                <p>Come back tomorrow to see if you wrote anything a year ago!</p>
+                            </div>
+                            
+                        {% else %}
+                            
+                            
+
+                            <div class="memory-content">
+                                <!-- Original Journal Entry Section -->
+                                {% include 'partials/memory_entry.html' %}
+                                <br />
+                                {% if not data.error %}
+                                    <!-- AI Analysis Section -->
+                                     <br />
+                                    <div class="summary-grid">
+                                        {% include 'partials/memory_analysis.html' %}
+                                    </div>
+
+                                    <!-- Comparison Section (if today's entry exists) -->
+                                    {% if data.comparison %}
+                                        {% include 'partials/memory_comparison.html' %}
+                                    {% endif %}
+                                {% else %}
+                                    <div class="error-message">{{ data.error }}</div>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html> 

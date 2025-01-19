@@ -1,0 +1,47 @@
+<div class="entries-container">
+    <!-- Past Entry -->
+    <div class="summary-card">
+        <div class="entry-header">
+            <h4>📝 One Year Ago</h4>
+            <div class="entry-date">{{ data.date }}</div>
+        </div>
+        <div class="entry-content">
+            <div class="entry-title">
+                <h4>{{ data.note.title or 'Untitled' }}</h4>
+                <div class="entry-mood">
+                    <span class="mood-score">{{ "%.2f"|format(data.note.mood_score) }}</span>
+                    <span class="mood-emoji">{{ data.note.mood_emoji }}</span>
+                </div>
+            </div>
+            <div class="entry-text">
+                {{ data.note.content }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Today's Entry -->
+    <div class="summary-card">
+        <div class="entry-header">
+            <h4>📝 Today</h4>
+            <div class="entry-date">{{ data.today_date }}</div>
+        </div>
+        {% if data.today_note %}
+            <div class="entry-content">
+                <div class="entry-title">
+                    <h4>{{ data.today_note.title or 'Untitled' }}</h4>
+                    <div class="entry-mood">
+                        <span class="mood-score">{{ "%.2f"|format(data.today_note.mood_score) }}</span>
+                        <span class="mood-emoji">{{ data.today_note.mood_emoji }}</span>
+                    </div>
+                </div>
+                <div class="entry-text">
+                    {{ data.today_note.content }}
+                </div>
+            </div>
+        {% else %}
+            <div class="entry-content no-entry">
+                <p>No entry yet for today. <a href="/" class="write-link">Write one now?</a></p>
+            </div>
+        {% endif %}
+    </div>
+</div> 

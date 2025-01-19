@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insights - Notes</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo-container">
+                <img src="{{ url_for('static', filename='journal-ai-high-resolution-logo-transparent.png') }}" alt="Journal AI" class="logo">
+            </div>
+            <div class="header-buttons">
+                <button onclick="window.location.href='/'"><i class="fas fa-plus"></i> New</button>
+            </div>
+        </header>
+        <main>
+            <div class="app-container">
+                <div class="notes-list">
+                    <h2><i class="fas fa-chevron-down"></i> Menu</h2>
+                    <nav class="sidebar-nav">
+                        <a href="/" class="nav-item">
+                            <i class="far fa-file-alt"></i> Notes
+                        </a>
+                        <a href="/insights" class="nav-item active">
+                            <i class="far fa-chart-bar"></i> Insights
+                        </a>
+                        <a href="/one-year-ago" class="nav-item">
+                            <i class="fas fa-history"></i> One Year Ago
+                        </a>
+                    </nav>
+                </div>
+                <div class="insights-container">
+                    <div class="mood-overview">
+                        <div class="mood-header">
+                            <h2>Mood Analysis</h2>
+                        </div>
+                        <div class="mood-content">
+                            <div class="mood-stats">
+                                <div class="current-mood">
+                                    <h3>Average Mood</h3>
+                                    <div class="stat-number">
+                                        <span id="averageMood">-</span>
+                                        <span id="averageMoodEmoji">😐</span>
+                                    </div>
+                                </div>
+                                <div class="mood-chart-container">
+                                    <h3>Mood Trend</h3>
+                                    <canvas id="moodChart"></canvas>
+                                </div>
+                            </div>
+                            <div class="mood-scale">
+                                <h3>Understanding Mood Scores</h3>
+                                <div class="mood-table">
+                                    <div class="mood-row">
+                                        <div class="mood-cell">
+                                            <span class="mood-emoji">😄</span>
+                                            <div class="mood-info">
+                                                <span class="mood-label">Very Positive</span>
+                                                <span class="mood-range">0.5 to 1.0</span>
+                                                <span class="mood-desc">Feeling great! High energy, optimistic, and enthusiastic</span>
+                                            </div>
+                                        </div>
+                                        <div class="mood-cell">
+                                            <span class="mood-emoji">🙂</span>
+                                            <div class="mood-info">
+                                                <span class="mood-label">Positive</span>
+                                                <span class="mood-range">0.1 to 0.5</span>
+                                                <span class="mood-desc">Good mood, content, and generally upbeat</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mood-row">
+                                        <div class="mood-cell">
+                                            <span class="mood-emoji">😐</span>
+                                            <div class="mood-info">
+                                                <span class="mood-label">Neutral</span>
+                                                <span class="mood-range">-0.1 to 0.1</span>
+                                                <span class="mood-desc">Balanced emotions, neither particularly positive nor negative</span>
+                                            </div>
+                                        </div>
+                                        <div class="mood-cell">
+                                            <span class="mood-emoji">🙁</span>
+                                            <div class="mood-info">
+                                                <span class="mood-label">Negative</span>
+                                                <span class="mood-range">-0.5 to -0.1</span>
+                                                <span class="mood-desc">Feeling down, frustrated, or mildly upset</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mood-row">
+                                        <div class="mood-cell">
+                                            <span class="mood-emoji">😢</span>
+                                            <div class="mood-info">
+                                                <span class="mood-label">Very Negative</span>
+                                                <span class="mood-range">-1.0 to -0.5</span>
+                                                <span class="mood-desc">Strong negative emotions, significant distress or sadness</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <br />
+
+                    <div class="weekly-summary-container">
+                        <h2>Weekly Summary</h2>
+                        {% if stats.weekly_summary %}
+                            <div class="summary-header">
+                                <h3>{{ stats.weekly_summary.date_range }}</h3>
+                                <p>{{ stats.weekly_summary.total_entries }} entries this week</p>
+                                {% if stats.weekly_summary.message %}
+                                    <p class="entries-needed">{{ stats.weekly_summary.message }}</p>
+                                {% endif %}
+                            </div>
+                            {% if not stats.weekly_summary.message %}
+                                <div class="summary-grid">
+                                    <div class="summary-card">
+                                        <h4>Week Overview</h4>
+                                        <p>Average mood: {{ "%.2f"|format(stats.weekly_summary.avg_mood) }} 
+                                            {{ "😄" if stats.weekly_summary.avg_mood >= 0.5 else 
+                                               "🙂" if stats.weekly_summary.avg_mood >= 0.1 else 
+                                               "😐" if stats.weekly_summary.avg_mood >= -0.1 else 
+                                               "🙁" if stats.weekly_summary.avg_mood >= -0.5 else "😢" 
+                                            }}
+                                        </p>
+                                        <p>Mood has {{ stats.weekly_summary.mood_trend }} this week</p>
+                                    </div>
+                                    <div class="summary-card">
+                                        <h4>Best Day</h4>
+                                        <p class="day-mood">{{ "%.2f"|format(stats.weekly_summary.best_day.mood) }} 
+                                            {{ "😄" if stats.weekly_summary.best_day.mood >= 0.5 else 
+                                               "🙂" if stats.weekly_summary.best_day.mood >= 0.1 else 
+                                               "😐" if stats.weekly_summary.best_day.mood >= -0.1 else 
+                                               "🙁" if stats.weekly_summary.best_day.mood >= -0.5 else "😢" 
+                                            }}
+                                        </p>
+                                        <p class="day-date">{{ stats.weekly_summary.best_day.date }}</p>
+                                        <p class="day-title">{{ stats.weekly_summary.best_day.title }}</p>
+                                    </div>
+                                    <div class="summary-card">
+                                        <h4>Challenging Day</h4>
+                                        <p class="day-mood">{{ "%.2f"|format(stats.weekly_summary.worst_day.mood) }} 
+                                            {{ "😄" if stats.weekly_summary.worst_day.mood >= 0.5 else 
+                                               "🙂" if stats.weekly_summary.worst_day.mood >= 0.1 else 
+                                               "😐" if stats.weekly_summary.worst_day.mood >= -0.1 else 
+                                               "🙁" if stats.weekly_summary.worst_day.mood >= -0.5 else "😢" 
+                                            }}
+                                        </p>
+                                        <p class="day-date">{{ stats.weekly_summary.worst_day.date }}</p>
+                                        <p class="day-title">{{ stats.weekly_summary.worst_day.title }}</p>
+                                    </div>
+                                    {% if stats.weekly_summary.top_names %}
+                                    <div class="summary-card">
+                                        <h4>People Mentioned</h4>
+                                        <div class="week-names-list">
+                                            {% for name, count in stats.weekly_summary.top_names.items() %}
+                                            <div class="week-name-item">
+                                                <span class="name">{{ name }}</span>
+                                                <span class="count">{{ count }}x</span>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        {% else %}
+                            <p class="no-entries">No journal entries this week</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="ai-insights-container">
+                        <h2>AI Weekly Analysis</h2>
+                        {% if stats.weekly_summary and not stats.weekly_summary.message %}
+                            <div class="summary-grid">
+                                <!-- Mood Analysis -->
+                                <div class="summary-card">
+                                    <h4>🎭 Mood Analysis</h4>
+                                    <div class="mood-analysis">
+                                        <p><strong>Trend:</strong> {{ stats.weekly_summary.mood_analysis.overall_trend }}</p>
+                                        <p>{{ stats.weekly_summary.mood_analysis.description }}</p>
+                                    </div>
+                                </div>
+
+                                <!-- Achievements -->
+                          
+
+                                <!-- Challenges -->
+                               
+
+                                <!-- Key People -->
+                                <div class="summary-card">
+                                    <h4>👥 Important People</h4>
+                                    <ul class="people-list">
+                                        {% for person in stats.weekly_summary.key_people %}
+                                            <li>
+                                                <strong>{{ person.name }}</strong> ({{ person.role }})
+                                                <br>
+                                                <small>{{ person.impact }}</small>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+
+                                <!-- Themes -->
+                                <div class="summary-card">
+                                    <h4> Recurring Themes</h4>
+                                    <ul class="theme-list">
+                                        {% for theme in stats.weekly_summary.themes %}
+                                            <li>{{ theme }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+
+                                <!-- Activities -->
+                                <div class="summary-card">
+                                    <h4>📅 Notable Activities</h4>
+                                    <ul class="activity-list">
+                                        {% for activity in stats.weekly_summary.activities %}
+                                            <li>{{ activity }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+
+                                <!-- Insights -->
+                                <div class="summary-card">
+                                    <h4>💡 Personal Insights</h4>
+                                    <ul class="insight-list">
+                                        {% for insight in stats.weekly_summary.insights %}
+                                            <li>{{ insight }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+
+                                <!-- Recommendations -->
+                                <div class="summary-card">
+                                    <h4>🎯 Recommendations for Next Week</h4>
+                                    <ul class="recommendations-list">
+                                        {% for recommendation in stats.weekly_summary.recommendations %}
+                                            <li>{{ recommendation }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Weekly Summary -->
+                            <div class="weekly-overview">
+                                <h3>📝 Weekly Overview</h3>
+                                <p>{{ stats.weekly_summary.summary }}</p>
+                            </div>
+                        {% else %}
+                            <p class="no-entries">{{ stats.weekly_summary.message or "Not enough entries for AI analysis" }}</p>
+                        {% endif %}
+                    </div>
+
+                    
+
+                    <div class="weekly-achievements-challenges">
+                        <div class="achievements">
+                            <h3>Top Achievements This Week</h3>
+                            <ul>
+                                {% for achievement in stats.weekly_summary.top_achievements %}
+                                    <li>{{ achievement }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="challenges">
+                            <h3>Key Challenges Faced</h3>
+                            <ul>
+                                {% for challenge in stats.weekly_summary.top_challenges %}
+                                    <li>{{ challenge }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script>
+        async function loadMoodData() {
+            try {
+                const response = await fetch('/insights/mood-data');
+                const moodData = await response.json();
+                
+                if (!moodData || moodData.length === 0) {
+                    console.log('No mood data available');
+                    return;
+                }
+
+                const ctx = document.getElementById('moodChart');
+                if (!ctx) {
+                    console.error('Could not find chart canvas');
+                    return;
+                }
+
+                // Calculate average mood
+                const avgMood = moodData.reduce((acc, data) => acc + data.mood, 0) / moodData.length;
+                document.getElementById('averageMood').textContent = avgMood.toFixed(2);
+                document.getElementById('averageMoodEmoji').textContent = ` ${getMoodEmoji(avgMood)}`;
+
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: moodData.map(data => {
+                            // Ensure we parse the date correctly and adjust for timezone
+                            const date = new Date(data.date + 'T12:00:00Z');
+                            return `${date.getMonth() + 1}/${date.getDate()}`;
+                        }),
+                        datasets: [{
+                            label: 'Mood Score',
+                            data: moodData.map(data => data.mood),
+                            borderColor: '#2ecc71',
+                            backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                            fill: true,
+                            tension: 0.3,
+                            pointRadius: 6,
+                            pointBackgroundColor: '#2ecc71',
+                            pointBorderColor: 'white',
+                            pointBorderWidth: 2,
+                            pointHoverRadius: 8,
+                            pointHitRadius: 10,
+                            pointHoverBackgroundColor: '#27ae60',
+                            pointHoverBorderColor: 'white',
+                            pointHoverBorderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        onClick: function(e, elements) {
+                            // Only handle clicks on points
+                            if (elements && elements.length > 0 && elements[0].element.options.pointStyle) {
+                                const index = elements[0].index;
+                                const noteId = moodData[index].id;
+                                // Open the note directly instead of just navigating to the page
+                                window.location.href = `/?note=${noteId}&open=true`;
+                            }
+                        },
+                        interaction: {
+                            mode: 'point',  // Only interact with points
+                            intersect: true // Require direct interaction with points
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                enabled: true,
+                                mode: 'point',
+                                intersect: true,
+                                callbacks: {
+                                    title: function(tooltipItems) {
+                                        const data = moodData[tooltipItems[0].dataIndex];
+                                        // Parse date with timezone consideration
+                                        const date = new Date(data.date + 'T12:00:00Z');
+                                        return date.toLocaleDateString('en-US', {
+                                            weekday: 'long',
+                                            month: 'long',
+                                            day: 'numeric'
+                                        });
+                                    },
+                                    label: function(context) {
+                                        const data = moodData[context.dataIndex];
+                                        return [
+                                            `Title: ${data.title}`,
+                                            `Mood: ${data.mood.toFixed(2)} ${data.mood_emoji}`,
+                                            `Highlight: ${data.highlight}`
+                                        ];
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                min: -1,
+                                max: 1,
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.1)'
+                                },
+                                ticks: {
+                                    callback: function(value) {
+                                        if (value === 1) return 'Very Positive';
+                                        if (value === 0.5) return 'Positive';
+                                        if (value === 0) return 'Neutral';
+                                        if (value === -0.5) return 'Negative';
+                                        if (value === -1) return 'Very Negative';
+                                        return '';
+                                    }
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('Error loading mood data:', error);
+            }
+        }
+
+        function getMoodEmoji(score) {
+            if (score === null || score === undefined) return "😐";
+            if (score >= 0.5) return "😄";  // Very Positive
+            if (score >= 0.1) return "🙂";  // Positive
+            if (score >= -0.1) return "😐"; // Neutral
+            if (score >= -0.5) return "🙁"; // Negative
+            return "😢";                    // Very Negative
+        }
+
+        window.addEventListener('load', loadMoodData);
+    </script>
+</body>
+</html> 

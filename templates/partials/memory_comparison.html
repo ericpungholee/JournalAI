@@ -1,0 +1,75 @@
+<div class="comparison-section">
+    <h2><i class="fas fa-exchange-alt"></i> Then vs Now</h2>
+    <div class="summary-grid">
+        <!-- Emotional Journey -->
+        <div class="summary-card">
+            <h4><i class="fas fa-heart"></i> Emotional Journey</h4>
+            <div class="comparison-content">
+                <div class="then-now">
+                    <div class="then">
+                        <h5>Then</h5>
+                        <p>{{ data.comparison.emotional_comparison.then }}</p>
+                    </div>
+                    <div class="now">
+                        <h5>Now</h5>
+                        <p>{{ data.comparison.emotional_comparison.now }}</p>
+                    </div>
+                </div>
+                <div class="change">
+                    <h5>Growth & Change</h5>
+                    <p>{{ data.comparison.emotional_comparison.change }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Life Changes -->
+        <div class="summary-card">
+            <h4><i class="fas fa-chart-line"></i> Life Changes</h4>
+            <ul class="changes-list">
+                {% for change in data.comparison.life_changes %}
+                    <li>{{ change }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- Common Threads -->
+        <div class="summary-card">
+            <h4><i class="fas fa-link"></i> Common Threads</h4>
+            <ul class="themes-list">
+                {% for theme in data.comparison.common_themes %}
+                    <li>{{ theme }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- Notable Differences -->
+        <div class="summary-card">
+            <h4><i class="fas fa-random"></i> Notable Differences</h4>
+            <ul class="differences-list">
+                {% for diff in data.comparison.differences %}
+                    <li>{{ diff }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- Signs of Growth -->
+        <div class="summary-card">
+            <h4><i class="fas fa-seedling"></i> Signs of Growth</h4>
+            <ul class="growth-list">
+                {% for indicator in data.comparison.growth_indicators %}
+                    <li>{{ indicator }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- Relationship Evolution -->
+        <div class="summary-card">
+            <h4><i class="fas fa-user-friends"></i> Relationship Evolution</h4>
+            <ul class="relationship-changes-list">
+                {% for change in data.comparison.relationship_changes %}
+                    <li>{{ change }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div> 

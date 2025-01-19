@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notes</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo-container">
+                <img src="{{ url_for('static', filename='journal-ai-high-resolution-logo-transparent.png') }}" alt="Journal AI" class="logo">
+            </div>
+            <div class="header-buttons">
+                <button id="newNote"><i class="fas fa-plus"></i> New</button>
+                <button id="saveNote" class="primary-button"><i class="fas fa-save"></i> Save</button>
+                <button id="downloadTxt"><i class="fas fa-download"></i> Export</button>
+            </div>
+        </header>
+        <main>
+            <div class="app-container">
+                <div class="notes-list">
+                    <h2><i class="fas fa-chevron-down"></i> Menu</h2>
+                    <nav class="sidebar-nav">
+                        <a href="/" class="nav-item active">
+                            <i class="far fa-file-alt"></i> Notes
+                        </a>
+                        <a href="/insights" class="nav-item">
+                            <i class="far fa-chart-bar"></i> Insights
+                        </a>
+                        <a href="/one-year-ago" class="nav-item">
+                            <i class="fas fa-history"></i> One Year Ago Today
+                        </a>
+                    </nav>
+                    <h2><i class="fas fa-chevron-down"></i> Notes</h2>
+                    <div id="notesList"></div>
+                </div>
+                <div class="note-container">
+                    <div class="note-header">
+                        <input type="text" id="noteTitle" placeholder="Untitled" />
+                        <input type="date" id="journalDate" class="journal-date-input">
+                    </div>
+                    <textarea id="noteContent" placeholder="Start writing..."></textarea>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Check URL parameters for note to load
+        const urlParams = new URLSearchParams(window.location.search);
+        const noteId = urlParams.get('note');
+        const shouldOpen = urlParams.get('open');
+        
+        if (noteId && shouldOpen) {
+            loadNote(parseInt(noteId));
+        }
+        
+        // ... rest of your existing code ...
+    });
+    </script>
+</body>
+</html> 
