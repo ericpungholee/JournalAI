@@ -1,7 +1,7 @@
 # JournalAI 📝
 
 An intelligent journaling application that combines personal reflection with AI-powered insights. Write, reflect, and gain a deeper understanding of your thoughts and emotions over time.
-
+# Video Demo: https://youtu.be/79aJFVIAwaM
 ## Features ✨
 
 - **Smart Journaling**: Write daily entries with automatic mood analysis.
